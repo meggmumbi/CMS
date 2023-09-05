@@ -1,6 +1,9 @@
 import Head from 'next/head';
 import { Layout as DashboardLayout } from '../layouts/dashboard/layout';
 import React, { useState } from 'react';
+import Chip from '@mui/material/Chip';
+import { emphasize, styled } from '@mui/material/styles';
+import CloudUploadIcon from '@heroicons/react/24/solid/CloudArrowUpIcon';
 import {
   Box,
   Button,
@@ -16,23 +19,36 @@ import {
   TableContainer,
   Table,
   TableBody,
+  Typography,
+  AppBar,
+  IconButton,
+  Toolbar,
+  CircularProgress,
 } from '@mui/material';
+import AddIcon from '@heroicons/react/24/solid/PlusCircleIcon';
+import ArrowBackIcon from '@heroicons/react/24/solid/ArrowUturnLeftIcon';
+import PlusCircleIcon from '@heroicons/react/24/solid/PlusCircleIcon';
+import HomeIcon from '@heroicons/react/24/solid/HomeIcon';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+
 
 const labelStyle = {
-  backgroundColor: '#f0f0f0', // Grey background color
-  padding: '10px', // Adjust padding as needed
-  width: '150px', // Adjust label width as needed
-  textAlign: 'right', // Align label text to the right
+  backgroundColor: '#f8d591', 
+  padding: '10px', 
+  width: '150px', 
+  textAlign: 'right' 
 };
 
-const inputStyle = {
-  width: '100%', // Set input fields to 100% width
-  marginLeft: '10px', // Space between label and input field
-  marginBottom: '10px', // Adjust spacing as needed
+const inputStyle = {  
+ 
 };
 
-
-
+const buttonStyle = {
+  display: 'flex',
+  justifyContent: 'center',
+  marginTop: '20px',
+  
+};
 const Page = () => {
   const [formData, setFormData] = useState({
     fullname: '',
@@ -44,7 +60,8 @@ const Page = () => {
     groups: '',
     photo: null,
   });
-
+  const [loading, setLoading] = useState(false);
+ 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -67,12 +84,36 @@ const Page = () => {
       photo: file,
     });
   };
+  const StyledBreadcrumb = styled(Chip)(({ theme }) => {
+    const backgroundColor =
+      theme.palette.mode === 'light'
+        ? theme.palette.grey[100]
+        : theme.palette.grey[800];
+    return {
+      backgroundColor,
+      height: theme.spacing(3),
+      color: theme.palette.text.primary,
+      fontWeight: theme.typography.fontWeightRegular,
+      '&:hover, &:focus': {
+        backgroundColor: emphasize(backgroundColor, 0.06),
+      },
+      '&:active': {
+        boxShadow: theme.shadows[1],
+        backgroundColor: emphasize(backgroundColor, 0.12),
+      },
+    };
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
+     // Simulate loading for a few seconds
+     setLoading(true);
     // Implement your logic to submit the member data here
     console.log('Form Data:', formData);
-    // Reset the form fields if needed
+    // Simulate a delay to show loading state (Remove this in production)
+    setTimeout(() => {
+      setLoading(false);
+      // Reset the form fields if needed
     setFormData({
       fullname: '',
       dob: '',
@@ -83,14 +124,13 @@ const Page = () => {
       groups: '',
       photo: null,
     });
-  };
+  },2000);
+};
     return (
       <>
-      <Head>
-        <title>
-          Companies | Devias Kit
-        </title>
-      </Head>
+    
+    
+    
       <Box
         component="main"
         sx={{
@@ -98,9 +138,25 @@ const Page = () => {
           py: 8
         }}
       >
+    <Breadcrumbs sx={{marginBottom:'50px', marginLeft:'100px', width:'100%'}} aria-label="breadcrumb">
+        <StyledBreadcrumb
+        
+          component="a"
+          href="/"
+          label="Home"
+       
+        />
+        <StyledBreadcrumb component="a" href="/customers" label="Members" />
+        <StyledBreadcrumb
+          label="New Member"
+         
+        />
+      </Breadcrumbs>
         <Container maxWidth="xl">
     
         <div>
+     
+
       <form onSubmit={handleSubmit}>
         <TableContainer>
           <Table>
@@ -112,12 +168,12 @@ const Page = () => {
                 <TableCell>
                   <TextField
                     style={inputStyle}
-                    variant="outlined"
+                    variant = 'filled'
                     fullWidth
                     name =  "fullname"
                     value={formData.fullname}
                     onChange={handleInputChange}
-                    required
+                    
                   />
                 </TableCell>
               </TableRow>
@@ -129,12 +185,12 @@ const Page = () => {
                   <TextField
                     style={inputStyle}
                     type="date"
-                    variant="outlined"
+                    variant="filled"
                     fullWidth
                     name="dob"
                     value={formData.dob}
                     onChange={handleInputChange}
-                    required
+                    
                   />
                 </TableCell>
               </TableRow>
@@ -171,13 +227,13 @@ const Page = () => {
                 <TableCell>
                 <TextField
                  style={inputStyle}
-                  label="Phone"
-                  variant="outlined"
+                 
+                  variant="filled"
                   fullWidth
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  required
+                 
                 />
                 </TableCell>
               </TableRow>
@@ -188,7 +244,7 @@ const Page = () => {
                 <TableCell>
                 <TextField
                       style={inputStyle}
-                      label="Email"
+                    
                       variant="outlined"
                       fullWidth
                       name="email"
@@ -204,13 +260,13 @@ const Page = () => {
                 <TableCell>
                 <TextField
                     style={inputStyle}
-                    label="Residency"
+                   
                     variant="outlined"
                     fullWidth
                     name="residency"
                     value={formData.residency}
                     onChange={handleInputChange}
-                    required
+                   
                   />
                 </TableCell>
               </TableRow>
@@ -221,7 +277,7 @@ const Page = () => {
                 <TableCell>
                 <TextField
                     style={inputStyle}
-                    label="Groups"
+                    
                     variant="outlined"
                     fullWidth
                     name="groups"
@@ -237,11 +293,14 @@ const Page = () => {
                 </TableCell>
                 <TableCell>
                 <input
-                       
+                      component="label"
+                      variant="contained"
+                      startIcon={<CloudUploadIcon />}
                       type="file"
                       accept="image/*"
                       onChange={handlePhotoChange}
-                      required
+                      
+                     
                     />
                     {formData.photo && (
                       <img
@@ -256,13 +315,22 @@ const Page = () => {
             </TableBody>
           </Table>
         </TableContainer>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-        >
-          Add Member
-        </Button>
+        <div style={buttonStyle}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            size="large"
+            startIcon={<AddIcon />} // Add an icon to the button
+            disabled={loading} // Disable the button during loading
+          >
+            {loading ? (
+              <CircularProgress size={24} color="inherit" /> // Show loading indicator
+            ) : (
+              'Add Member'
+            )}
+          </Button>
+        </div>
       </form>
     </div>
       </Container>
