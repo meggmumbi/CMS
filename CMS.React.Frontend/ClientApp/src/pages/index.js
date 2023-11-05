@@ -18,7 +18,7 @@ const Page = () => (
   <>
     <Head>
       <title>
-        Overview | Devias Kit
+        Overview | Church Management System
       </title>
     </Head>
     <Box

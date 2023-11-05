@@ -111,7 +111,7 @@ const Page = () => {
     <>
       <Head>
         <title>
-          Events | Devias Kit
+          Events | Church Management System
         </title>
       </Head>
       <Box

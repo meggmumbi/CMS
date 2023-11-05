@@ -52,7 +52,7 @@ export const items = [
   },
   {
     title: 'Calendar',
-    path: '/companies',
+    path: '/EventCalendar',
     icon: (
       <SvgIcon fontSize="small">
         <Calendar />
