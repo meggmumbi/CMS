@@ -144,7 +144,7 @@ export const EventTable = (props) => {
                       {event.name}
                     </TableCell>
                     <TableCell>
-                      {/* Render truncated description with "Read More" link */}
+                      
                       {event.description.length > 100 ? (
                         isDescriptionExpanded ? (
                           <>
@@ -168,7 +168,7 @@ export const EventTable = (props) => {
                           </>
                         )
                       ) : (
-                        event.description // If not long enough for truncation, display as-is
+                        event.description 
                       )}
                     </TableCell>
                     <TableCell>
