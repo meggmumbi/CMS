@@ -9,6 +9,9 @@ export const AccountPopover = (props) => {
   const router = useRouter();
   const auth = useAuth();
 
+   // Get the user's name from the authentication context
+   const userName = auth.user ? auth.user.name : '';
+
   const handleSignOut = useCallback(
     () => {
       onClose?.();
@@ -42,7 +45,7 @@ export const AccountPopover = (props) => {
           color="text.secondary"
           variant="body2"
         >
-          Anika Visser
+           {userName}
         </Typography>
       </Box>
       <Divider />

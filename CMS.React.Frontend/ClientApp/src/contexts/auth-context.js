@@ -7,7 +7,8 @@ import { jwtDecode } from 'jwt-decode'
 const HANDLERS = {
   INITIALIZE: 'INITIALIZE',
   SIGN_IN: 'SIGN_IN',
-  SIGN_OUT: 'SIGN_OUT'
+  SIGN_OUT: 'SIGN_OUT',
+  TOKEN_EXPIRED: 'TOKEN_EXPIRED',
 };
 
 const initialState = {
@@ -51,7 +52,15 @@ const handlers = {
       isAuthenticated: false,
       user: null
     };
-  }
+  },
+  [HANDLERS.TOKEN_EXPIRED]: (state) => {
+    return {
+      ...state,
+      isAuthenticated: false,
+      user: null,
+    };
+  },
+
 };
 
 const reducer = (state, action) => (
@@ -102,13 +111,20 @@ export const AuthProvider = (props) => {
     }
   };
 
-  useEffect(
-    () => {
-      initialize();
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  useEffect(() => {
+    initialize();
+    // Check for token expiration
+    const token = window.sessionStorage.getItem('token');
+    if (token) {
+      const decodedToken = jwt.decode(token);
+      const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
+      const currentTime = Date.now();
+      if (currentTime > expirationTime) {
+        // Token has expired, dispatch TOKEN_EXPIRED action
+        dispatch({ type: HANDLERS.TOKEN_EXPIRED });
+      }
+    }
+  }, []);
 
   const skip = () => {
     try {
@@ -148,24 +164,16 @@ export const AuthProvider = (props) => {
           console.error(err);
         }
 
-        //Extract user information from the token (You may need a library like jwt-decode)
-        const decodedToken = jwt.decode(response.data.response);
+        //Extract user information from the token (You may need a library like jwt-decode)        
         const decodedjwtToken = jwtDecode(response.data.response);
         
-        // const user = {
-        //   id: decodedToken.id,
-        //   avatar: decodedToken.avatar,
-        //   name: decodedToken.name,
-        //   email: decodedToken.email
-        // };
-
     const user = {
       id: '5e86809283e28b96d2d38537',
       avatar: '/assets/avatars/avatar-anika-visser.png',
-      name: decodedjwtToken.name,
-      email: decodedjwtToken.emailaddress
+      name: decodedjwtToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
+      email: decodedjwtToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"]
     };
-    console.log("decoded token", decodedjwtToken);
+    console.log("decoded token", user);
 
     dispatch({
       type: HANDLERS.SIGN_IN,
@@ -207,8 +215,8 @@ export const AuthProvider = (props) => {
           const user = {
             // id: decodedToken.id,
             // avatar: decodedToken.avatar,
-            name: decodedToken.name,
-            email: decodedToken.email
+            name: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
+            email: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"]
           };
 
           // Dispatch the SIGN_IN action with the user information
@@ -218,6 +226,7 @@ export const AuthProvider = (props) => {
           });
        
       } else {
+        console.log(response.data.errors);
         throw new Error('Registration failed',response.data.errors[0].message);
       }
     } catch (err) {
